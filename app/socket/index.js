@@ -36,9 +36,11 @@ var ioEvents = function(io) {
 
 	// Chatroom namespace
 	io.of('/chatroom').on('connection', function(socket) {
+        console.log("Chatroom on connection");
 
 		// Join a chatroom
 		socket.on('join', function(roomId) {
+			console.log("New user join room");
 			Room.findById(roomId, function(err, room){
 				if(err) throw err;
 				if(!room){
@@ -48,6 +50,8 @@ var ioEvents = function(io) {
 				} else {
 					// Check if user exists in the session
 					if(socket.request.session.passport == null){
+						console.log('User not logined, but allow join room for now.');
+						socket.join(roomId); //For testing
 						return;
 					}
 
@@ -55,6 +59,7 @@ var ioEvents = function(io) {
 
 						// Join the room channel
 						socket.join(newRoom.id);
+						console.log("Joined room: ", newRoom.id);
 
 						Room.getUsers(newRoom, socket, function(err, users, cuntUserInRoom){
 							if(err) throw err;
@@ -99,7 +104,7 @@ var ioEvents = function(io) {
 
 		// When a new message arrives
 		socket.on('newMessage', function(roomId, message) {
-
+			console.log("Room: ", roomId, ", Received newMessage: ", message);
 			// No need to emit 'addMessage' to the current socket
 			// As the new message will be added manually in 'main.js' file
 			// socket.emit('addMessage', message);
@@ -120,8 +125,8 @@ var init = function(app){
 	var server 	= require('http').Server(app);
 	var io 		= require('socket.io')(server);
 
-	// Force Socket.io to ONLY use "websockets"; No Long Polling.
-	io.set('transports', ['websocket']);
+	// Force Socket.io to ONLY use "websockets"; No Long Polling. Or safer can just force websockets on client
+	//io.set('transports', ['websocket']);
 
 	// Using Redis
 	let port = config.redis.port;

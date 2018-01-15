@@ -1,10 +1,10 @@
 {
 	"db": {
-		"username": "<MongoDBUsername>",
-		"password": "<MongoDBPassword>",
-		"host": "<MongoDBHost>",
-		"port": "<MongoDBPort>",
-		"name": "<MongoDBName>"
+		"username": "admin",
+		"password": "Qwerty2017",
+		"host": "ds239127.mlab.com",
+		"port": "39127",
+		"name": "gbook"
 	},
 	"sessionSecret": "<RandomString>",
 	"facebook": {
