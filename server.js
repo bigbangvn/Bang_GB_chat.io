@@ -13,6 +13,7 @@ var session 	= require('./app/session');
 var passport    = require('./app/auth');
 var ioServer 	= require('./app/socket')(app);
 var logger 		= require('./app/logger');
+var cookieParser = require('cookie-parser')
 
 // Set the port number
 var port = process.env.PORT || 3000;
@@ -30,6 +31,7 @@ app.use(session);
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
+app.use(cookieParser()) //just to show cookies for debuging
 
 app.use('/', routes);
 

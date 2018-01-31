@@ -1,4 +1,4 @@
-'use strict';
+'use strict'; //Fuck, not sure but lots of people use it
 
 var roomModel   = require('../database').models.room;
 var User 		= require('../models/user');

@@ -11,6 +11,7 @@ var Room = require('../models/room');
 router.get('/', function(req, res, next) {
 	// If user is already logged in, then redirect to rooms page
 	if(req.isAuthenticated()){
+		console.log('Authenticated, user: ', req.user);
 		res.redirect('/rooms');
 	}
 	else{
@@ -23,11 +24,44 @@ router.get('/', function(req, res, next) {
 });
 
 // Login
+// For Web
 router.post('/login', passport.authenticate('local', { 
 	successRedirect: '/rooms', 
 	failureRedirect: '/',
 	failureFlash: true
 }));
+
+//For mobile
+router.post('/mobileLogin', function(req, res) {
+	console.log("Login: ", req.body);
+    passport.authenticate('local', function(err, user, info) {
+        if (err) {
+            return res.end(err);
+        }
+        if(!user) {
+            return res.status(400).json({errCode: 1, msg: "Wrong Credentials"});
+        }
+        req.logIn(user, function(err) {
+            if (err)
+                return res.end(err);
+            user.password = undefined
+            return res.json({ errCode: 0, msg: "Logged in!", user: user});    
+        });
+    })(req, res);
+});
+
+//Just for testing authenticated
+router.get('/user/profile', function(req, res) {
+	console.log('get user/profile:', req.session, req.cookies);
+
+	if (req.isAuthenticated()) {
+		console.log('Authenticated, user: ', req.user);
+		res.end('{"msg": "Ok, already logined"}');
+	} else {
+		console.log('Not logined');
+		res.end('{"msg:" "Not logined"}');
+	}
+});
 
 // Register via username and password
 router.post('/register', function(req, res, next) {

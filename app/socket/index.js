@@ -6,6 +6,10 @@ var adapter = require('socket.io-redis');
 
 var Room = require('../models/room');
 
+//BangNT - add message history
+var Message = require('../models/message');
+
+
 /**
  * Encapsulates all code for emitting and listening to socket events
  *
@@ -14,6 +18,9 @@ var ioEvents = function(io) {
 
 	// Rooms namespace
 	io.of('/rooms').on('connection', function(socket) {
+
+		console.log('rooms connection:');
+  		console.dir(socket.request.session);
 
 		// Create a new room
 		socket.on('createRoom', function(title) {
@@ -36,7 +43,9 @@ var ioEvents = function(io) {
 
 	// Chatroom namespace
 	io.of('/chatroom').on('connection', function(socket) {
-        console.log("Chatroom on connection");
+        console.log('chatroom connection:');
+  		console.dir(socket.request.session);
+		console.log("cookies: ", socket.cookies);
 
 		// Join a chatroom
 		socket.on('join', function(roomId) {
@@ -50,9 +59,11 @@ var ioEvents = function(io) {
 				} else {
 					// Check if user exists in the session
 					if(socket.request.session.passport == null){
-						console.log('User not logined, but allow join room for now.');
-						socket.join(roomId); //For testing
+						console.log('User not logined: ', socket.request.session);
+						console.log('isAuthenticated = ', socket.request.isAuthenticated());
 						return;
+					} else {
+						console.log('Found session: ', socket.request.session);
 					}
 
 					Room.addUser(room, socket, function(err, newRoom){
@@ -110,6 +121,13 @@ var ioEvents = function(io) {
 			// socket.emit('addMessage', message);
 			
 			socket.broadcast.to(roomId).emit('addMessage', message);
+
+			//Save message async
+			var userId = socket.request.session.passport.user;
+			console.log('Save message, room: ', roomId, ' userId: ', userId);
+			message.conversationId = roomId;
+			message.userId = userId;
+			Message.addMessage(message);
 		});
 
 	});

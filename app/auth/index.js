@@ -31,18 +31,28 @@ var init = function(){
 	// Plug-in Local Strategy
 	passport.use(new LocalStrategy(
 	  function(username, password, done) {
+	  	console.log('Authenticating..');
 	    User.findOne({ username: new RegExp(username, 'i'), socialId: null }, function(err, user) {
-	      if (err) { return done(err); }
+	      if (err) { 
+	      	console.log('Authen failed: ', err);
+	      	return done(err); 
+	      }
 
 	      if (!user) {
+	      	console.log('Can not find user');
 	        return done(null, false, { message: 'Incorrect username or password.' });
 	      }
 
 	      user.validatePassword(password, function(err, isMatch) {
-	        	if (err) { return done(err); }
+	        	if (err) {
+	        		console.log('Error verify password: ', err);
+	        		return done(err);
+	        	}
 	        	if (!isMatch){
+	        		console.log('Incorrect username or password');
 	        		return done(null, false, { message: 'Incorrect username or password.' });
 	        	}
+	        	console.log('Authen ok');
 	        	return done(null, user);
 	      });
 

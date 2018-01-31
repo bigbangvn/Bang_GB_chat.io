@@ -6,7 +6,7 @@
 		"port": "39127",
 		"name": "gbook"
 	},
-	"sessionSecret": "<RandomString>",
+	"sessionSecret": "1112222<RandomString>",
 	"facebook": {
 		"clientID": "<AppID>",
 		"clientSecret": "<AppSecret>",
