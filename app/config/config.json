@@ -8,8 +8,8 @@
 	},
 	"sessionSecret": "1112222<RandomString>",
 	"facebook": {
-		"clientID": "<AppID>",
-		"clientSecret": "<AppSecret>",
+		"clientID": "1897108193938661",
+		"clientSecret": "012b18047b1537207a7bc1e110183262",
 		"callbackURL": "/auth/facebook/callback",
 		"profileFields": ["id", "displayName", "photos"]
 	},

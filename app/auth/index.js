@@ -6,6 +6,7 @@ var logger 		= require('../logger');
 
 var LocalStrategy 		= require('passport-local').Strategy;
 var FacebookStrategy  	= require('passport-facebook').Strategy;
+var FacebookTokenStrategy = require('passport-facebook-token'); //for Mobile login
 var TwitterStrategy  	= require('passport-twitter').Strategy;
 
 var User = require('../models/user');
@@ -63,6 +64,7 @@ var init = function(){
 	// In case of Facebook, tokenA is the access token, while tokenB is the refersh token.
 	// In case of Twitter, tokenA is the token, whilet tokenB is the tokenSecret.
 	var verifySocialAccount = function(tokenA, tokenB, data, done) {
+		console.log('verifySocialAccount, tokenA:', tokenA, ', tokenB: ', tokenB, ', data: ', data);
 		User.findOrCreate(data, function (err, user) {
 	      	if (err) { return done(err); }
 			return done(err, user); 
@@ -72,6 +74,18 @@ var init = function(){
 	// Plug-in Facebook & Twitter Strategies
 	passport.use(new FacebookStrategy(config.facebook, verifySocialAccount));
 	passport.use(new TwitterStrategy(config.twitter, verifySocialAccount));
+
+	//Mobile login
+	passport.use(new FacebookTokenStrategy({
+	    clientID: config.facebook.clientID,
+	    clientSecret: config.facebook.clientSecret
+	  }, function(accessToken, refreshToken, profile, done) {
+	  	console.log('Login facebook from mobile, accessToken: ', accessToken, ', refreshToken: ', refreshToken, ', profile:', profile);
+	    User.findOrCreate({id: profile.id}, function (error, user) {
+	      return done(error, user);
+	    });
+	  }
+	));
 
 	return passport;
 }

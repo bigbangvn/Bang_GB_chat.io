@@ -44,7 +44,7 @@ router.post('/mobileLogin', function(req, res) {
         req.logIn(user, function(err) {
             if (err)
                 return res.end(err);
-            user.password = undefined
+            user.password = undefined //clear unnecessary info
             return res.json({ errCode: 0, msg: "Logged in!", user: user});    
         });
     })(req, res);
@@ -100,6 +100,16 @@ router.get('/auth/facebook/callback', passport.authenticate('facebook', {
 		failureRedirect: '/',
 		failureFlash: true
 }));
+
+//Facebook login for Mobile
+router.post('/auth/facebook/token',
+  passport.authenticate('facebook-token'),
+  function (req, res) {
+    let status = req.user? 200 : 401;
+    req.user.password = undefined //clear unnecessary info
+    res.status(status).json({errCode: 0, msg: 'success', user: req.user});
+  }
+);
 
 // 2. Login via Twitter
 router.get('/auth/twitter', passport.authenticate('twitter'));
