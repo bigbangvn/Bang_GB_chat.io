@@ -115,6 +115,12 @@ var ioEvents = function(io) {
 
 		// When a new message arrives
 		socket.on('newMessage', function(roomId, message) {
+			try {
+				let parsedMsg = JSON.parse(message);
+				message = parsedMsg;
+			} catch (e) {
+				console.log("No need to parse");
+			}
 			console.log("Room: ", roomId, ", Received newMessage: ", message);
 			// No need to emit 'addMessage' to the current socket
 			// As the new message will be added manually in 'main.js' file
@@ -128,6 +134,20 @@ var ioEvents = function(io) {
 			message.conversationId = roomId;
 			message.userId = userId;
 			Message.addMessage(message);
+		});
+
+		socket.on('newFeed', function(roomId, feed) {
+			try {
+				let dic = JSON.parse(feed);
+				feed = dic;
+			} catch (e) {
+				console.log("No need to parse");
+			}
+			console.log('Socket on newFeed: ', feed);
+
+			socket.broadcast.to(roomId).emit('addFeed', feed);
+
+			//Save to DB
 		});
 
 	});
